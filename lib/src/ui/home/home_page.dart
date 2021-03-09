@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_task_app/src/ui/home/projects_tab/projects_tab.dart';
+import 'package:flutter_task_app/src/ui/home/search_tab/search_tab.dart';
+import 'package:flutter_task_app/src/ui/home/tasks_tab/tasks_tab.dart';
 
 //Crtl + . converter para stateful widget
 class HomePage extends StatefulWidget {
@@ -7,22 +10,55 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int currentIndex = 0;
+class _HomePageState extends State<HomePage> 
+with SingleTickerProviderStateMixin {
 
+  int currentIndex = 0;
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(vsync: this, length: 3, initialIndex: currentIndex);
+  }
+
+@override
+  void dispose() {
+    super.dispose();
+
+    _tabController.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Redux"),),
+      
+      body: SafeArea(
+          child: TabBarView(
+          controller: _tabController,
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[
+            ProjectsTab(),
+            TasksTab(),
+            SearchTab()
+          ],),
+      ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(16, 0, 32, 16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 32, 16),
         child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _BottomNavigationBar(        
               currentIndex: currentIndex,
-              onItemTap: (index) => setState(() => currentIndex = index),
+              onItemTap: (index) {
+                _tabController.index = index;
+                currentIndex = index;
+                setState(() {
+                  
+                });
+              },
               items: <Icon>[
                 Icon(Icons.description),
                 Icon(Icons.check_circle),
@@ -30,7 +66,7 @@ class _HomePageState extends State<HomePage> {
               ],
 
             ),
-            _AddButton(onTap: () {}, icon: Icon(Icons.add),)
+            _AddButton(onTap: () {}, icon: Icon(Icons.add, color: Colors.white,),)
           ],
         ),
       ),
